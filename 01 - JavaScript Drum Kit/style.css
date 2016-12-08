@@ -8,7 +8,8 @@ body,html {
   padding: 0;
   font-family: sans-serif;
 }
-
+/* Set container as a flex container arranging elements horizontally
+  and centered vertically */
 .keys {
   display:flex;
   flex:1;
@@ -17,6 +18,7 @@ body,html {
   justify-content: center;
 }
 
+/* Style for the key container */
 .key {
   border:4px solid black;
   border-radius:5px;
@@ -31,17 +33,20 @@ body,html {
   text-shadow:0 0 5px black;
 }
 
+/* styles applied during transition in and out*/
 .playing {
   transform:scale(1.1);
   border-color:#ffc600;
   box-shadow: 0 0 10px #ffc600;
 }
 
+/* Style for the key letter */
 kbd {
   display: block;
   font-size: 40px;
 }
 
+/* Style sound name in yellow */
 .sound {
   font-size: 1.2rem;
   text-transform: uppercase;
