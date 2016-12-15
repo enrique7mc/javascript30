@@ -139,7 +139,7 @@
       }
     }
 
-    function arrowsPressed(e) {
+    const arrowsPressed = (e) => {
       const keyCode = e.keyCode;
       if (keyCode === 37) {
         currentIndex = currentIndex === 0 ? 4 : currentIndex - 1;
@@ -150,7 +150,7 @@
       toggleCurrent();
     }
 
-    function toggleCurrent() {
+    const toggleCurrent = () => {
       const currentPanel = panels.item(currentIndex);
       currentPanel.classList.toggle('open');
       panels.forEach((p, i) => {
