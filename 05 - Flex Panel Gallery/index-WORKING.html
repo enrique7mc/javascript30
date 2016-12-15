@@ -143,16 +143,19 @@
       const keyCode = e.keyCode;
       if (keyCode === 37) {
         currentIndex = currentIndex === 0 ? 4 : currentIndex - 1;
-        toggleCurrent();
       } else if (keyCode === 39) {
         currentIndex = currentIndex === 4 ? 0 : currentIndex + 1;
-        toggleCurrent();
       }
+
+      toggleCurrent();
     }
 
     function toggleCurrent() {
       const currentPanel = panels.item(currentIndex);
       currentPanel.classList.toggle('open');
+      panels.forEach((p, i) => {
+        if(currentIndex !== i) p.classList.remove('open');
+      });
     }
 
     panels.forEach(panel => panel.addEventListener('click', toggleOpen));
