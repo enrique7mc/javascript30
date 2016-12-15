@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Flex Panels 💪</title>
-  <link href='https://fonts.googleapis.com/css?family=Amatic+SC' rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Amatic+SC" rel="stylesheet" type="text/css">
 </head>
 <body>
   <style>
@@ -124,9 +124,13 @@
 
   <script>
     const panels = document.querySelectorAll('.panel');
+    let currentIndex = 2;
 
-    function toggleOpen() {
+    function toggleOpen(e) {
       this.classList.toggle('open');
+      panels.forEach((p, i) => {
+        if(p === e.target) currentIndex = i;
+      });
     }
 
     function toggleActive(e) {
@@ -135,8 +139,25 @@
       }
     }
 
+    function arrowsPressed(e) {
+      const keyCode = e.keyCode;
+      if (keyCode === 37) {
+        currentIndex = currentIndex === 0 ? 4 : currentIndex - 1;
+        toggleCurrent();
+      } else if (keyCode === 39) {
+        currentIndex = currentIndex === 4 ? 0 : currentIndex + 1;
+        toggleCurrent();
+      }
+    }
+
+    function toggleCurrent() {
+      const currentPanel = panels.item(currentIndex);
+      currentPanel.classList.toggle('open');
+    }
+
     panels.forEach(panel => panel.addEventListener('click', toggleOpen));
     panels.forEach(panel => panel.addEventListener('transitionend', toggleActive));
+    window.addEventListener('keydown', arrowsPressed);
   </script>
 
 
