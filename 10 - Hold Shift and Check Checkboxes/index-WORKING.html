@@ -111,16 +111,11 @@ let lastChecked = -1;
 
 /* Event Listeners */
 const handleCheck = e => {
-  if (lastChecked < 0) {
-    lastChecked = checkboxes.indexOf(e.target);
-    return;
-  }
-
   let endIndex = checkboxes.indexOf(e.target);
   if (lastChecked > endIndex) {
     [lastChecked, endIndex] = [endIndex, lastChecked];
   }
-  if (shiftHolding) {
+  if (lastChecked >= 0 && shiftHolding) {
     for (let i = lastChecked + 1; i < endIndex; i++) {
       checkboxes[i].checked = true;
     }
