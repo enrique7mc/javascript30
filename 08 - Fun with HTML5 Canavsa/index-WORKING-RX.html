@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.0.1/Rx.min.js"></script>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+<!-- Based on day 8 of Wesbos' javascript30.com-->
+<style>
+  html, body {
+    margin:0;
+  }
+</style>
+<script>
+const canvas = document.querySelector('#draw');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.heigh = window.innerHeight;
+ctx.strokeStyle = '#BADA55';
+ctx.lineJoin = 'round';
+ctx.lineCap = 'round';
+ctx.lineWidth = 100;
+
+let lastX = 0;
+let lastY = 0;
+let hue = 0;
+let direction = true;
+
+function draw (e) {
+  // we don't need to check isDrawing flag
+  ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+  [lastX, lastY] = [e.offsetX, e.offsetY];
+  hue++;
+  if (hue >= 360 ) hue = 0;
+  if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+    direction = !direction;
+  }
+  ctx.lineWidth += direction ? 1 : -1;
+}
+
+const eventNames = ['mousedown', 'mousemove', 'mouseup', 'mouseout'];
+// Get observables for all relevant events
+const [mouseDowns, mouseMoves, mouseUps, mouseOuts]
+        = eventNames.map(name => Rx.Observable.fromEvent(canvas, name));
+
+// Create an observable that returns mouseMoves after a mouseDown
+// but before a mouseUp or mouseOut, effectively creating drag events
+const drags =
+  mouseDowns.concatMap(mouseDown => {
+    [lastX, lastY] = [mouseDown.offsetX, mouseDown.offsetY];
+    return mouseMoves.takeUntil(Rx.Observable.merge(mouseUps, mouseOuts));
+  });
+
+// For every drag event draw!
+drags.forEach(draw);
+</script>
+</body>
+</html>
