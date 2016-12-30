@@ -52,10 +52,12 @@ const [mouseDowns, mouseMoves, mouseUps, mouseOuts]
 // Create an observable that returns mouseMoves after a mouseDown
 // but before a mouseUp or mouseOut, effectively creating drag events
 const drags =
-  mouseDowns.concatMap(mouseDown => {
+  mouseDowns
+  .do(mouseDown => {
     [lastX, lastY] = [mouseDown.offsetX, mouseDown.offsetY];
-    return mouseMoves.takeUntil(Rx.Observable.merge(mouseUps, mouseOuts));
-  });
+  })
+  .map(mouseDown => mouseMoves.takeUntil(Rx.Observable.merge(mouseUps, mouseOuts)))
+  .concatAll();
 
 // For every drag event draw!
 drags.forEach(draw);
