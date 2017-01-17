@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.6/rx.all.js"></script>
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="Search from Wikipedia">
+    <ul class="suggestions">
+    </ul>
+  </form>
+<script>
+const Observable = Rx.Observable;
+const searchInput = document.querySelector('.search');
+const suggestions = document.querySelector('.suggestions');
+const eventNames = ['change', 'keyup'];
+const keyPresses = Observable.merge(...eventNames.map(name => Observable.fromEvent(searchInput, name)));
+
+const searches = keyPresses
+  .throttle(20)
+  .map(keyPress => searchInput.value)
+  .distinctUntilChanged()
+  .map(searchTerm => getWikipediaSearchResults(searchTerm))
+  .switchLatest();
+
+searches.forEach(resultSet => {
+  displayMatches(resultSet);
+},
+error => {
+  console.log(error);
+});
+
+const getWikipediaSearchResults = term => Observable.create(observer => {
+  let cancelled = false;
+  const url = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=' +
+        encodeURIComponent(term) + '&callback=?';
+  if (term.trim().length === 0) {
+    observer.onNext([]);
+    observer.onCompleted();
+  } else {
+    $.getJSON(url, data => {
+      if (!cancelled) {
+        observer.onNext(data[1]);
+        observer.onCompleted();
+      }
+    });
+  }
+  return () => {
+    cancelled = true;
+  };
+});
+
+const displayMatches = (results) => {
+  const html = results.map(result => {
+    const regex = new RegExp(searchInput.value, 'gi');
+    const resultText = result.replace(regex, `<span class="hl">${searchInput.value}</span>`)
+    return `
+      <li>
+        <span class="name">${resultText}</span>
+      </li>
+      `;
+  }).join('');
+  suggestions.innerHTML = html;
+};
+
+</script>
+  </body>
+</html>
